@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { SpeedInsights } from '@vercel/speed-insights/react';
 
 // ============================================================================
 // DRONE FLEET DATABASE
@@ -1138,6 +1139,7 @@ export default function DroneMissionPlanner() {
           Drone Mission Planner v1.0 • AirCaptures
         </p>
       </footer>
+      <SpeedInsights />
     </div>
   );
 }
