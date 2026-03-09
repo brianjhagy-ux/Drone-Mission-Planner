@@ -830,20 +830,15 @@ export default function DroneMissionPlanner() {
   const [terrainVariation, setTerrainVariation] = useState('');
   
   // Notify parent page of height changes (for iframe embed on aircaptures.com)
+  // Fires only when layout-changing state changes, not on every DOM mutation
   useEffect(() => {
-    let lastHeight = 0;
     const sendHeight = () => {
-      const height = document.body.scrollHeight;
-      if (height !== lastHeight) {
-        lastHeight = height;
-        window.parent.postMessage({ iframeHeight: height }, '*');
-      }
+      setTimeout(() => {
+        window.parent.postMessage({ iframeHeight: document.body.scrollHeight }, '*');
+      }, 100);
     };
     sendHeight();
-    const observer = new ResizeObserver(sendHeight);
-    observer.observe(document.body);
-    return () => observer.disconnect();
-  }, []);
+  }, [selectedUseCase, autoSelectDrone, terrainFollow, results]);
 
   const areaSqM = useMemo(() => {
     const value = parseFloat(areaSize) || 0;
