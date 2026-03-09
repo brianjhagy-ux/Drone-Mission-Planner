@@ -831,9 +831,13 @@ export default function DroneMissionPlanner() {
   
   // Notify parent page of height changes (for iframe embed on aircaptures.com)
   useEffect(() => {
+    let lastHeight = 0;
     const sendHeight = () => {
-      const height = document.documentElement.scrollHeight;
-      window.parent.postMessage({ iframeHeight: height }, '*');
+      const height = document.body.scrollHeight;
+      if (height !== lastHeight) {
+        lastHeight = height;
+        window.parent.postMessage({ iframeHeight: height }, '*');
+      }
     };
     sendHeight();
     const observer = new ResizeObserver(sendHeight);
