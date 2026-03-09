@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 
 // ============================================================================
 // DRONE FLEET DATABASE
@@ -829,6 +829,18 @@ export default function DroneMissionPlanner() {
   const [terrainFollow, setTerrainFollow] = useState(false);
   const [terrainVariation, setTerrainVariation] = useState('');
   
+  // Notify parent page of height changes (for iframe embed on aircaptures.com)
+  useEffect(() => {
+    const sendHeight = () => {
+      const height = document.documentElement.scrollHeight;
+      window.parent.postMessage({ iframeHeight: height }, '*');
+    };
+    sendHeight();
+    const observer = new ResizeObserver(sendHeight);
+    observer.observe(document.body);
+    return () => observer.disconnect();
+  }, []);
+
   const areaSqM = useMemo(() => {
     const value = parseFloat(areaSize) || 0;
     const conversions = { acres: 4046.86, sqft: 0.0929, sqm: 1, hectares: 10000 };
