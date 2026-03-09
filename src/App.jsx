@@ -828,18 +828,17 @@ export default function DroneMissionPlanner() {
   const [windSpeed, setWindSpeed] = useState('calm');
   const [terrainFollow, setTerrainFollow] = useState(false);
   const [terrainVariation, setTerrainVariation] = useState('');
-  
-  // Notify parent page of height changes (for iframe embed on aircaptures.com)
-  // Fires only when layout-changing state changes, not on every DOM mutation
-  useEffect(() => {
-    const sendHeight = () => {
-      setTimeout(() => {
-        window.parent.postMessage({ iframeHeight: document.body.scrollHeight }, '*');
-      }, 100);
-    };
-    sendHeight();
-  }, [selectedUseCase, autoSelectDrone, terrainFollow, results]);
 
+  // Send height to parent for iframe embed — runs after every render, deduplicated
+  const lastSentHeight = React.useRef(0);
+  useEffect(() => {
+    const h = document.body.scrollHeight;
+    if (h > 0 && h !== lastSentHeight.current) {
+      lastSentHeight.current = h;
+      window.parent.postMessage({ iframeHeight: h }, '*');
+    }
+  });
+  
   const areaSqM = useMemo(() => {
     const value = parseFloat(areaSize) || 0;
     const conversions = { acres: 4046.86, sqft: 0.0929, sqm: 1, hectares: 10000 };
